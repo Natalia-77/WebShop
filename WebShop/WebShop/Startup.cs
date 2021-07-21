@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebShop.Domain;
 using WebShop.Domain.Entities.Identity;
+using WebShop.Models.Validation;
 
 namespace WebShop
 {
@@ -40,7 +43,10 @@ namespace WebShop
                 .AddEntityFrameworkStores<AppEFContext>()
                .AddDefaultTokenProviders();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                 .AddFluentValidation();
+
+            services.AddTransient<IValidator<CatsValidationModel>, CatValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
