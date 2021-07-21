@@ -8,7 +8,7 @@ namespace WebShop.Domain.Entities.Products
 {
     public class Cat:BaseEntity<long>
     {
-        //public long Id { get; set; }
+        
         public string Name { get; set; }
         public decimal Price { get; set; }
         public DateTime Birthday { get; set; }
