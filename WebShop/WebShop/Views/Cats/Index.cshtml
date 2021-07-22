@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Список котів";
-    //Layout = null;
+    
 }
 
 <h1>Список котів для продажу</h1>
@@ -16,6 +16,7 @@
             <th scope="col">Дата народження</th>
             <th scope="col">Ціна</th>
             <th scope="col">Фото</th>
+            <th>Дії</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,8 @@
                 <td>@item.Birthday.ToLongDateString()</td>
                 <td>@item.Price</td>
                 <td>@item.Image</td>
+                <td><a class="text-success" asp-controller="Cats" asp-action="Edit" asp-route-id="@item.Id">Змінити</a>&nbsp;&nbsp;&nbsp;<a class="text-danger " asp-controller="Cats" asp-action="Delete" asp-route-id="@item.Id">Видалити</a></td>
+                
             </tr>
         }
 
