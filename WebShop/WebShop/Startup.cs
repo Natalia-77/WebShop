@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebShop.Domain;
 using WebShop.Domain.Entities.Identity;
+using WebShop.Models.MapAnimals;
 using WebShop.Models.Validation;
 
 namespace WebShop
@@ -46,7 +47,11 @@ namespace WebShop
             services.AddControllersWithViews()
                  .AddFluentValidation();
 
+
             services.AddTransient<IValidator<CatsValidationModel>, CatValidator>();
+
+            //Automapper діє на основі типу шаблону AnimalProfile.
+            services.AddAutoMapper(typeof(AnimalProfile));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

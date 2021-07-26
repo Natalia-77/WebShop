@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,22 +14,25 @@ namespace WebShop.Controllers
     public class CatsController : Controller
     {
         private readonly AppEFContext _context;
-        public CatsController(AppEFContext context)
+        private readonly IMapper _mapper;
+        public CatsController(AppEFContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
-            List<CatVM> model =
-                _context.Cats.Select(x => new CatVM
-                {
-                    Id = x.Id,
-                    Birthday = x.Birthday,
-                    Price=x.Price,
-                    Image = x.Image,
-                    Name = x.Name
-                }).ToList();
+            //List<CatVM> model =
+            //    _context.Cats.Select(x => new CatVM
+            //    {
+            //        Id = x.Id,
+            //        Birthday = x.Birthday,
+            //        Price=x.Price,
+            //        Image = x.Image,
+            //        Name = x.Name
+            //    }).ToList();
 
+            var model = _context.Cats.Select(x => _mapper.Map<CatVM>(x)).ToList();
             return View(model);
 
             
