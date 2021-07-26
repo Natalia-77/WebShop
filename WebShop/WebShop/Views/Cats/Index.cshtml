@@ -15,8 +15,8 @@
             <th scope="col">Кличка кота</th>
             <th scope="col">Дата народження</th>
             <th scope="col">Ціна</th>
-            <th scope="col">Фото</th>
-            <th>Дії</th>
+            <th scope="col" style="text-align:center" >Фото</th>
+            <th scope="col" style="text-align:center">Дії</th>
         </tr>
     </thead>
     <tbody>
@@ -27,8 +27,19 @@
                 <td>@item.Name</td>
                 <td>@item.Birthday.ToLongDateString()</td>
                 <td>@item.Price</td>
-                <td>@item.Image</td>
-                <td><a class="text-success" asp-controller="Cats" asp-action="Edit" asp-route-id="@item.Id">Змінити</a>&nbsp;&nbsp;&nbsp;<a class="text-danger " asp-controller="Cats" asp-action="Delete" asp-route-id="@item.Id">Видалити</a></td>
+                <td>
+                    <img src="@item.Image"
+                       width="250",                        
+                         alt="img"
+                       
+                        />
+                </td>
+               @* <td>@item.Image</td>*@
+                <td style="text-align:center">
+                    <a class="text-success" asp-controller="Cats" asp-action="Edit" asp-route-id="@item.Id">Змінити</a>
+                &nbsp;&nbsp;&nbsp;
+                <a class="text-danger " asp-controller="Cats" asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                </td>
                 
             </tr>
         }
