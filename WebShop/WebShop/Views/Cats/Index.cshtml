@@ -3,7 +3,18 @@
 
 @{
     ViewData["Title"] = "Список котів";
-    
+
+}
+@section Styles {
+    <style>
+         th {
+            text-align: center;
+         }
+        img {
+            width:150px;
+        }
+       
+    </style>
 }
 
 <h1>Список котів для продажу</h1>
@@ -15,8 +26,8 @@
             <th scope="col">Кличка кота</th>
             <th scope="col">Дата народження</th>
             <th scope="col">Ціна</th>
-            <th scope="col" style="text-align:center" >Фото</th>
-            <th scope="col" style="text-align:center">Дії</th>
+            <th scope="col">Фото</th>
+            <th scope="col">Дії</th>
         </tr>
     </thead>
     <tbody>
@@ -24,15 +35,13 @@
         {
             <tr>
                 <th scope="row">@item.Id</th>
-                <td>@item.Name</td>
-                <td>@item.Birthday.ToLongDateString()</td>
-                <td>@item.Price</td>
+                <td class="text-center">@item.Name</td>
+                <td class="text-center">@item.Birthday.ToLongDateString()</td>
+                <td class="text-center" >@item.Price</td>
                 <td>
                     <img src="@item.Image"
-                       width="250",                        
-                         alt="img"
-                       
-                        />
+                         class="ml-lg-5",
+                         alt="img"/>
                 </td>
                @* <td>@item.Image</td>*@
                 <td style="text-align:center">
@@ -40,9 +49,9 @@
                 &nbsp;&nbsp;&nbsp;
                 <a class="text-danger " asp-controller="Cats" asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
                 </td>
-                
+
             </tr>
-        }
+         }
 
     </tbody>
-    </table>
+</table>
