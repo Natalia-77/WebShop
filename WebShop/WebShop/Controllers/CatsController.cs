@@ -104,18 +104,18 @@ namespace WebShop.Controllers
         }
 
 
-        [HttpGet]
-        [ActionName("Delete")]
+        //[HttpGet]
+        //[ActionName("Delete")]
 
-        public IActionResult DeleteV(long id)
-        {
-            var catToDelete = _context.Cats.FirstOrDefault(x => x.Id == id);
-            if (catToDelete != null)
-            {
-                return View(catToDelete);
-            }
-            return NotFound();
-        }
+        //public IActionResult DeleteV(long id)
+        //{
+        //    var catToDelete = _context.Cats.FirstOrDefault(x => x.Id == id);
+        //    if (catToDelete != null)
+        //    {
+        //        return View(catToDelete);
+        //    }
+        //    return NotFound();
+        //}
 
         [HttpPost]
         public IActionResult Delete(long id)

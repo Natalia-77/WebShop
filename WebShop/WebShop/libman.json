@@ -20,5 +20,15 @@
   "library": "axios@0.21.1",
   "destination": "wwwroot/lib/axios/"
 }
+,
+{
+  "library": "bootstrap@5.0.2",
+  "destination": "wwwroot/lib/bootstrap/"
+}
+,
+{
+  "library": "jquery@3.6.0",
+  "destination": "wwwroot/lib/jquery/"
+}
 ]
 }
