@@ -34,7 +34,7 @@
   width: 6px;
   height: 18px;
   border-radius: 20%;
-  background: #f00;
+  background: #0026ff;
 }
 .lds-spinner div:nth-child(1) {
   transform: rotate(0deg);
@@ -164,8 +164,8 @@
                 <h5 class="modal-title">Waiting...</h5>
                 @*<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>*@
             </div>
-            <div class="modal-body">
-                <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="modal-body ">
+                <div class="lds-spinner "style="margin-left:200px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 @*<div class="lds-hourglass"></div>*@
             </div>
             @*<div class="modal-footer">
@@ -190,7 +190,7 @@
         $("[data-delete-item]").on("click", function (e) {
             deletecat = $(this).closest('a');
             e.preventDefault();
-            $("#modalDelete").modal("show");
+            $("#modalLoading").modal("show");
         });
 
         $("#btnDeleteAnimal").on("click", function () {
