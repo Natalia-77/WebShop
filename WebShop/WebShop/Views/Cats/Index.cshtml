@@ -138,6 +138,7 @@
     </tbody>
 </table>
 
+@* Модалка видалення *@
 <div class="modal" tabindex="-1" id="modalDelete">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -157,21 +158,18 @@
     </div>
 </div>
 
+
+@*Модалка лоадінга.*@
 <div class="modal" tabindex="-1" id="modalLoading">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Waiting...</h5>
-                @*<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>*@
+                <h5 class="modal-title">Waiting...</h5>               
             </div>
             <div class="modal-body ">
                 <div class="lds-spinner "style="margin-left:200px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                @*<div class="lds-hourglass"></div>*@
-            </div>
-            @*<div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                <button type="button" class="btn btn-primary" id="btnDeleteAnimal">Видалить</button>
-            </div>*@
+               
+            </div>           
         </div>
     </div>
 </div>
@@ -190,19 +188,40 @@
         $("[data-delete-item]").on("click", function (e) {
             deletecat = $(this).closest('a');
             e.preventDefault();
-            $("#modalLoading").modal("show");
+            $("#modalDelete").modal("show");
         });
 
         $("#btnDeleteAnimal").on("click", function () {
-            var res = deletecat.attr("data-id");
+
+            //var res = deletecat.attr("data-id");
             var url = `/cats/delete/${deletecat.attr("data-id")}`;           
-            axios.post(url)
-                .then(function (result) {
-                    deletecat.closest("tr").remove();
+            //axios.post(url)
+            //    .then(function (result) {
+            //        deletecat.closest("tr").remove();
+            //        $("#modalDelete").modal("hide");
+            //        //console.log(result);
+            //    }).catch(function (error) {
+
+            //        console.log(error);
+            //    });
+
+
+
+            //проміси,лоадінг завантажується "штучно" 4 секунди,потім видаляється обраний елемент.
+              axios.post(url)
+                .then(result=> {                  
                     $("#modalDelete").modal("hide");
+                    $("#modalLoading").modal("show");
                     console.log(result);
-                });
-        });
+                }).then(result => {
+                    setTimeout(() => {
+                        deletecat.closest("tr").remove();
+                        $("#modalLoading").modal("hide");
+                    },4000)
+                }).catch(function (error) {
+                    console.log(error);
+                });          
+            });
        
     });
 </script>
