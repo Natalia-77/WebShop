@@ -34,7 +34,7 @@
                     @*якщо користувач авторизувався успішно*@
                     @if (User.Identity.IsAuthenticated)
                     {
-                        //створюю форму//
+                        //створюю форму для виходу з облакового запису//
                         using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logout" }))
                         {
                             @Html.AntiForgeryToken()
