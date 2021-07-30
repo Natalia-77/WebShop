@@ -175,11 +175,6 @@
     </div>
 </div>
 
-
-
-
-
-
 @section Scripts{
     <script src="~/lib/axios/axios.min.js"></script>
 <script>
@@ -194,7 +189,7 @@
 
         $("#btnDeleteAnimal").on("click", function () {
 
-            //var res = deletecat.attr("data-id");
+            
             var url = `/cats/delete/${deletecat.attr("data-id")}`;           
             //axios.post(url)
             //    .then(function (result) {

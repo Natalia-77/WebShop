@@ -101,7 +101,7 @@ namespace WebShop.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Щось пішло не так.");
+                    ModelState.AddModelError("", "Помилка.");
                 }
             }
             return View(model);
