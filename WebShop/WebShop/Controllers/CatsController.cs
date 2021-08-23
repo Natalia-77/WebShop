@@ -46,7 +46,7 @@ namespace WebShop.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CatsValidationModel cats)
+        public async Task <IActionResult> Create(CatsValidationModel cats)
         {
 
             if (!ModelState.IsValid)
@@ -57,9 +57,10 @@ namespace WebShop.Controllers
                 Name = cats.Name,
                 Price=cats.Price,
                 Birthday=cats.BirthDay,
-                Image=cats.Image,
+                //Image="Hello",
                 DateCreate=DateTime.Now
             };
+
 
             _context.Cats.Add(cat);
             _context.SaveChanges();
@@ -68,7 +69,7 @@ namespace WebShop.Controllers
         }
 
        [HttpGet]
-       //Повертає форму з даними об"єкта0який буде відредагований.
+       //Повертає форму з даними об"єкта,який буде відредагований.
         public IActionResult Edit(long id)
         {
             var res = _context.Cats.FirstOrDefault(x => x.Id == id);
@@ -79,7 +80,7 @@ namespace WebShop.Controllers
                     Name = res.Name,
                     Price = res.Price,
                     BirthDay = res.Birthday,
-                    Image = res.Image
+                   // Image = res.Image
                 });         
                                
 
@@ -95,7 +96,7 @@ namespace WebShop.Controllers
                 var res = _context.Cats.FirstOrDefault(x => x.Id == id);
                 res.Name = cat.Name;
                 res.Birthday = cat.BirthDay;
-                res.Image = cat.Image;
+                //res.Image = cat.Image;
                 res.Price = cat.Price;
                 _context.SaveChanges();
                
