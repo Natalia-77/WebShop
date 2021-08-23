@@ -50,6 +50,8 @@ namespace WebShop
             
 
 
+
+
             services.AddTransient<IValidator<CatsValidationModel>, CatValidator>();
 
             //Automapper діє на основі типу шаблону AnimalProfile.
