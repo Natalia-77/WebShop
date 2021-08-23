@@ -47,7 +47,7 @@ namespace WebShop
 
             services.AddControllersWithViews()
                  .AddFluentValidation();
-           
+            
 
 
             services.AddTransient<IValidator<CatsValidationModel>, CatValidator>();
