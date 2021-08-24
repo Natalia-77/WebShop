@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebShop.Domain;
@@ -52,12 +55,28 @@ namespace WebShop.Controllers
             if (!ModelState.IsValid)
                 return View(cats);
 
+            string fileName = string.Empty;
+
+            if(cats.Image!=null)
+            {
+                var ext = Path.GetExtension(cats.Image.FileName);
+                fileName = Path.GetRandomFileName() + ext;
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
+
+                var filePath = Path.Combine(dir, fileName);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await cats.Image.CopyToAsync(stream);
+                }
+            }
+
             Cat cat = new Cat
             {
                 Name = cats.Name,
                 Price=cats.Price,
                 Birthday=cats.BirthDay,
-                //Image="Hello",
+                Image=fileName,
                 DateCreate=DateTime.Now
             };
 
@@ -124,6 +143,8 @@ namespace WebShop.Controllers
             var catDel = _context.Cats.FirstOrDefault(x => x.Id == id);
             if(catDel!=null)
             {
+
+                
                 _context.Cats.Remove(catDel);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
