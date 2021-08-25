@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.VisualBasic;
 using System;
@@ -18,26 +20,34 @@ namespace WebShop.Controllers
     {
         private readonly AppEFContext _context;
         private readonly IMapper _mapper;
-        public CatsController(AppEFContext context, IMapper mapper)
+        private IHostEnvironment _host;
+
+        public CatsController(AppEFContext context, IMapper mapper, IHostEnvironment host)
         {
             _context = context;
             _mapper = mapper;
+            _host = host;
         }
-        public IActionResult Index()
+        public IActionResult Index(SearchCatModel searchCat,int page=1)
         {
-            //List<CatVM> model =
-            //    _context.Cats.Select(x => new CatVM
-            //    {
-            //        Id = x.Id,
-            //        Birthday = x.Birthday,
-            //        Price=x.Price,
-            //        Image = x.Image,
-            //        Name = x.Name
-            //    }).ToList();
+            int itemOnPage = 2;
+            var query = _context.Cats.AsQueryable();
 
-            var model = _context.Cats.Select(x => _mapper.Map<CatVM>(x)).ToList();
+            if(!string.IsNullOrEmpty(searchCat.Name))
+            {
+                query = query.Where(y => y.Name.Contains(searchCat.Name));
+            }
+            CatsIndexModel model = new();
+            int count = query.Count();
+            var pageNumbers=(int)Math.Ceiling(count / (double)itemOnPage);
+            if (pageNumbers == 0) pageNumbers = 1;
+            int skipItems = (page - 1) * itemOnPage;
+            query = query.Skip(skipItems).Take(itemOnPage);
+
+            //var model = _context.Cats.Select(x => _mapper.Map<CatVM>(x)).ToList();
+            model.Cats= query.Select(x => _mapper.Map<CatVM>(x)).ToList();
+            model.Search = searchCat;
             return View(model);
-
             
         }
 
@@ -91,23 +101,33 @@ namespace WebShop.Controllers
        //Повертає форму з даними об"єкта,який буде відредагований.
         public IActionResult Edit(long id)
         {
+            CatsValidationModel cat = new CatsValidationModel();
             var res = _context.Cats.FirstOrDefault(x => x.Id == id);
-                   
-                return View(new CatsValidationModel()
-                {
-                    //Id = res.Id,
-                    Name = res.Name,
-                    Price = res.Price,
-                    BirthDay = res.Birthday,
-                   // Image = res.Image
-                });         
-                               
+            if (res.Image != null)
+            {
+                //var ext = Path.GetExtension(res.Image);
+                var nam = Path.GetFileName(res.Image);
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
 
+                var filePath = Path.Combine(dir, nam);
+                using (var stream = System.IO.File.OpenRead($"{filePath}"))
+                {
+                    var res_image = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name));                  
+
+                    cat.Name = res.Name;
+                    cat.Price = res.Price;
+                    cat.BirthDay = res.Birthday;
+                    cat.Image = res_image;                    
+                }            
+                               
+            }
+
+            return View(cat);
         }
 
         [HttpPost]
         //Отримує відредаговані дані у вигляді об"єкта CatsValidationModel.
-        public IActionResult Edit(long id, CatsValidationModel cat)
+        public async Task <IActionResult> Edit(long id, CatsValidationModel cat)
         {
 
             if (ModelState.IsValid)
@@ -115,7 +135,44 @@ namespace WebShop.Controllers
                 var res = _context.Cats.FirstOrDefault(x => x.Id == id);
                 res.Name = cat.Name;
                 res.Birthday = cat.BirthDay;
-                //res.Image = cat.Image;
+
+                string fileName = string.Empty;
+
+                if (cat.Image != null)
+                {
+                    var ext = Path.GetExtension(cat.Image.FileName);
+                    fileName = Path.GetRandomFileName() + ext;
+                    var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
+
+                    var filePath = Path.Combine(dir, fileName);
+
+                    using (var stream = System.IO.File.Create(filePath))
+                    {
+                        await cat.Image.CopyToAsync(stream);
+                    }
+                    var oldImage = res.Image;
+                    string fol = "\\images\\";
+                    string contentRootPath = _host.ContentRootPath + fol + oldImage;
+
+                    if (System.IO.File.Exists(contentRootPath))
+                    {
+                        System.IO.File.Delete(contentRootPath);
+                    }
+                    res.Image = fileName;
+                }
+
+
+                //if(upImage!=null)
+                //{
+                //string path = Path.Combine(_host.ContentRootPath,"images",Path.GetFileName(upImage.FileName));
+                //using (var stream = new FileStream(path, FileMode.Create))
+                //{
+                //    await upImage.CopyToAsync(stream);
+                //}
+                //res.Image = upImage.FileName;
+                // }
+
+
                 res.Price = cat.Price;
                 _context.SaveChanges();
                
@@ -143,8 +200,16 @@ namespace WebShop.Controllers
             var catDel = _context.Cats.FirstOrDefault(x => x.Id == id);
             if(catDel!=null)
             {
+                var name = catDel.Image;
+               // var exta = Path.GetExtension(catDel.Image);
+                string folder = "\\images\\";
+                string contentRootPath = _host.ContentRootPath + folder + name;
+               
+                if (System.IO.File.Exists(contentRootPath))
+                {
+                    System.IO.File.Delete(contentRootPath);
+                }
 
-                
                 _context.Cats.Remove(catDel);
                 _context.SaveChanges();
                 return RedirectToAction("Index");

@@ -1,0 +1,40 @@
+﻿
+@model IEnumerable<CatVM>
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">Кличка кота</th>
+            <th scope="col">Дата народження</th>
+            <th scope="col">Ціна</th>
+            <th scope="col">Фото</th>
+            <th scope="col">Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th scope="row">@item.Id</th>
+                <td class="text-center">@item.Name</td>
+                <td class="text-center">@item.Birthday.ToLongDateString()</td>
+                <td class="text-center">@item.Price</td>
+                <td>
+                    <img src="/images/@item.Image"
+                         class="rounded mx-auto d-block" ,
+                         alt="img" />
+                </td>
+                @* <td>@item.Image</td>*@
+                <td style="text-align:center">
+                    <a class="text-success" asp-controller="Cats" asp-action="Edit" asp-route-id="@item.Id">Змінити</a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a class="text-danger " asp-controller="Cats" asp-action="Delete" data-id="@item.Id" data-delete-item>Видалити</a>
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
