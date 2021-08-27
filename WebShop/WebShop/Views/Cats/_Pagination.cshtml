@@ -52,8 +52,7 @@
                         {
                             //тоді сторінка,яка активна стає відповідного кольору для виділення
                             <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
-                                <a href="?currentpage=@i"
-                                   class=""
+                                <a href="?currentpage=@i"                                  
                                    aria-label="Previous">
                                     @i
                                 </a>
@@ -70,8 +69,7 @@
                                 {
                                     //виділяємо кольором активну сторінку
                                     <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
-                                        <a href="?currentpage=@i"
-                                           class=""
+                                        <a href="?currentpage=@i"                                          
                                            aria-label="Previous">
                                             @i
                                         </a>
@@ -82,7 +80,7 @@
                                 {
 
                                     <td>
-                                        <a href="#" class="">..</a>
+                                        <a href="#">..</a>
                                     </td>
                                 }
                             }
@@ -93,7 +91,8 @@
                                 if ((i == 1) || (i == Model.Pagination.TotalPages) || ((Model.Pagination.CurrentPage - i >= -3) && (Model.Pagination.CurrentPage - i <= 3)))
                                 {
                                     <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
-                                        <a href="?currentpage=@i" class="" aria-label="Previous">
+                                        <a href="?currentpage=@i"
+                                           aria-label="Previous">
                                             @i
                                         </a>
                                     </td>
@@ -102,7 +101,7 @@
                                 else if ((i == Model.Pagination.CurrentPage - 4) || (i == Model.Pagination.CurrentPage + 4))
                                 {
                                     <td>
-                                        <a href="#" class="">..</a>
+                                        <a href="#">..</a>
                                     </td>
                                 }
                             }
@@ -113,7 +112,8 @@
                                 if ((i == 1) || (Model.Pagination.TotalPages - i <= 7))
                                 {
                                     <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
-                                        <a href="?currentpage=@i" class="" aria-label="Previous">
+                                        <a href="?currentpage=@i"
+                                           aria-label="Previous">
                                             @i
                                         </a>
                                     </td>
@@ -122,7 +122,7 @@
                                 else if (Model.Pagination.TotalPages - i == 8)
                                 {
                                     <td>
-                                        <a href="#" class="">..</a>
+                                        <a href="#">..</a>
                                     </td>
                                 }
                             }
@@ -135,7 +135,7 @@
                     @if (Model.Pagination.EnablePrevious)
                     {
                         <a href="?currentpage=@(Model.Pagination.CurrentPage - 1)"
-                           class="" aria-label="Previous">
+                                 aria-label="Previous">
                             Previous
                         </a>
                     }
