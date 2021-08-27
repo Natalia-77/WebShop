@@ -1,2 +1,152 @@
 ﻿
 @model CatsIndexModel
+
+@{
+    //інформація для повідомлення,що буде знизу повідомляти кількість записів,що виведені на сторінку із загальної кількості записів.
+    var PageFrom = ((Model.Pagination.CurrentPage - 1) * Model.Pagination.ItemOnPage) + 1;
+    var PageTo = (PageFrom + Model.Pagination.ItemOnPage);
+    var PageShow = ((PageTo - 1) > Model.Pagination.Count ? Model.Pagination.Count : (PageTo - 1));
+    var message =  PageFrom + " >> " + PageShow + " з " + Model.Pagination.Count + " записів";
+
+}
+<style>
+    .unselectable {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    td.active a {
+        color: red;
+    }
+</style>
+
+@if (Model.Pagination.TotalPages > 1)
+{
+    <center>
+        <div class="col-lg-12">
+            <table class="table" style="width:auto">
+                <caption class="text-dark text-center">@message</caption>
+                <tr>
+                    @*якщо поточна сторінка менша максимального значення сторінок,то пункт "Next" буде доступний для кліка.*@
+                    @*клас Pagination (Models/SearchCatPagination) задані умови ,за яких значення true*@
+                    <td class=" @(Model.Pagination.EnableNext ? " " : " unselectable" )">
+                        @if (Model.Pagination.EnableNext)
+                        {
+                            //і буде здійснюватись перехід на наступну сторінку від поточної.
+                            <a href="?currentpage=@(Model.Pagination.CurrentPage + 1)"
+                                aria-label="Previous">
+                                Next
+                            </a>
+                        }
+                        @*якщо дорівнює,то просто пункт "Next" буде на сторінці,але не клікабельний.*@
+                        else
+                        {
+                            <span>Next</span>
+                        }
+                    </td>
+                    @*ідемо циклом по загальній кількості сторінок пагінації*@
+                    @for (var i = 1; i <= Model.Pagination.TotalPages; i++)
+                    {
+                        //якщо загальна кількість сторінок менше/рівна 2
+                        if (Model.Pagination.TotalPages <= 2)
+                        {
+                            //тоді сторінка,яка активна стає відповідного кольору для виділення
+                            <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
+                                <a href="?currentpage=@i"
+                                   class=""
+                                   aria-label="Previous">
+                                    @i
+                                </a>
+                            </td>
+                        }
+                        //якщо ж в іншому випадку
+                        else
+                        {
+                            //якщо поточна сторінка менша/рівна 5
+                            if (Model.Pagination.CurrentPage <= 5)
+                            {
+                                //зліва виводиться вісім значень і остання сторнка
+                                if ((i <= 8) || (i == Model.Pagination.TotalPages))
+                                {
+                                    //виділяємо кольором активну сторінку
+                                    <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
+                                        <a href="?currentpage=@i"
+                                           class=""
+                                           aria-label="Previous">
+                                            @i
+                                        </a>
+                                    </td>
+                                }     
+                                //решта крапочки
+                                else if (i == Model.Pagination.TotalPages - 1)
+                                {
+
+                                    <td>
+                                        <a href="#" class="">..</a>
+                                    </td>
+                                }
+                            }
+                            //якщо клікнути на сторінку 6 або 7 і т.д. 
+                            else if ((Model.Pagination.CurrentPage > 5) && (Model.Pagination.TotalPages - Model.Pagination.CurrentPage >= 5))
+                            {
+                                //показуємо першу,останню сторінку,зліва від поточної 3 сторінки і справа від поточної 3 сторінки
+                                if ((i == 1) || (i == Model.Pagination.TotalPages) || ((Model.Pagination.CurrentPage - i >= -3) && (Model.Pagination.CurrentPage - i <= 3)))
+                                {
+                                    <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
+                                        <a href="?currentpage=@i" class="" aria-label="Previous">
+                                            @i
+                                        </a>
+                                    </td>
+                                }
+                                //решта ховаємо в крапочки
+                                else if ((i == Model.Pagination.CurrentPage - 4) || (i == Model.Pagination.CurrentPage + 4))
+                                {
+                                    <td>
+                                        <a href="#" class="">..</a>
+                                    </td>
+                                }
+                            }
+                            //якщо в правій стороні до кінця залишається 5 сторінок
+                            else if (Model.Pagination.TotalPages - Model.Pagination.CurrentPage < 5)
+                            {
+                                //показуємо першу сторінку і в кінці 8 включно з останньою.
+                                if ((i == 1) || (Model.Pagination.TotalPages - i <= 7))
+                                {
+                                    <td class="@(i == Model.Pagination.CurrentPage ? " active" : "" )">
+                                        <a href="?currentpage=@i" class="" aria-label="Previous">
+                                            @i
+                                        </a>
+                                    </td>
+                                }
+                                //решта крапочки
+                                else if (Model.Pagination.TotalPages - i == 8)
+                                {
+                                    <td>
+                                        <a href="#" class="">..</a>
+                                    </td>
+                                }
+                            }
+                        }
+
+                    }
+                    @*якщо поточна сторінка більша одиниці,то пункт "Previous" буде доступний для кліка.*@
+                    @*клас Pagination (Models/SearchCatPagination) задані умови ,за яких значення true*@
+                <td class=" @(Model.Pagination.EnablePrevious ? " " : " unselectable" )">
+                    @if (Model.Pagination.EnablePrevious)
+                    {
+                        <a href="?currentpage=@(Model.Pagination.CurrentPage - 1)"
+                           class="" aria-label="Previous">
+                            Previous
+                        </a>
+                    }
+                    @*якщо дорівнює одиниці,то просто пункт "Previous" буде на сторінці,але не клікабельний.*@
+                    else
+                    {
+                        <span>Previous</span>
+                    }
+                </td>
+                </tr>
+            </table>
+        </div>
+    </center>
+  }

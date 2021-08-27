@@ -28,25 +28,38 @@ namespace WebShop.Controllers
             _mapper = mapper;
             _host = host;
         }
-        public IActionResult Index(SearchCatModel searchCat,int page=1)
+        public IActionResult Index(SearchCatModel searchCat,int currentPage=0)
         {
-            int itemOnPage = 2;
+            CatsIndexModel model = new();
+           
+            //кількість записів на сторінці.
+            model.Pagination.ItemOnPage = 2;
             var query = _context.Cats.AsQueryable();
 
             if(!string.IsNullOrEmpty(searchCat.Name))
             {
                 query = query.Where(y => y.Name.Contains(searchCat.Name));
             }
-            CatsIndexModel model = new();
-            int count = query.Count();
-            var pageNumbers=(int)Math.Ceiling(count / (double)itemOnPage);
-            if (pageNumbers == 0) pageNumbers = 1;
-            int skipItems = (page - 1) * itemOnPage;
-            query = query.Skip(skipItems).Take(itemOnPage);
 
             //var model = _context.Cats.Select(x => _mapper.Map<CatVM>(x)).ToList();
+
+            //загальна кількість елементів.
+            model.Pagination.Count = query.Count();
+            //поточна сторінка.
+            model.Pagination.CurrentPage = currentPage == 0 ? 1 : currentPage;
+           
+            query = query.Skip((model.Pagination.CurrentPage - 1) * model.Pagination.ItemOnPage).Take(model.Pagination.ItemOnPage).OrderBy(n=>n.Name);
+
+            //список елементів,які будуть розбиті по сторінкам.
             model.Cats= query.Select(x => _mapper.Map<CatVM>(x)).ToList();
+           
+           
             model.Search = searchCat;
+
+            if (model.Pagination.CurrentPage > model.Pagination.TotalPages)
+            {
+                model.Pagination.CurrentPage = model.Pagination.TotalPages;
+            }
             return View(model);
             
         }
@@ -159,19 +172,7 @@ namespace WebShop.Controllers
                         System.IO.File.Delete(contentRootPath);
                     }
                     res.Image = fileName;
-                }
-
-
-                //if(upImage!=null)
-                //{
-                //string path = Path.Combine(_host.ContentRootPath,"images",Path.GetFileName(upImage.FileName));
-                //using (var stream = new FileStream(path, FileMode.Create))
-                //{
-                //    await upImage.CopyToAsync(stream);
-                //}
-                //res.Image = upImage.FileName;
-                // }
-
+                }             
 
                 res.Price = cat.Price;
                 _context.SaveChanges();
