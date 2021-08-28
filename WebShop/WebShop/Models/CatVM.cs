@@ -10,7 +10,7 @@ namespace WebShop.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public DateTime Birthday { get; set; }
+        public String BirthDay { get; set; }
         public string Image { get; set; }
     }
 }

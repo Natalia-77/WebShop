@@ -13,8 +13,9 @@ namespace WebShop.Models.MapAnimals
         public AnimalProfile()
         {
             CreateMap<Cat, CatVM>()
-                .ForMember(bday => bday.Birthday, opt => opt.MapFrom(bday => bday.Birthday.ToString("dd MMMM yyyy",
+                .ForMember(bday => bday.BirthDay, opt => opt.MapFrom(bday => bday.Birthday.ToString("dd MMMM yyyy",
                      CultureInfo.CreateSpecificCulture("uk"))));
+
         }
     }
 }

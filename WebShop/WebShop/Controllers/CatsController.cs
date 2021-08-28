@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,7 +49,9 @@ namespace WebShop.Controllers
             //поточна сторінка.
             model.Pagination.CurrentPage = currentPage == 0 ? 1 : currentPage;
            
-            query = query.Skip((model.Pagination.CurrentPage - 1) * model.Pagination.ItemOnPage).Take(model.Pagination.ItemOnPage).OrderBy(n=>n.Name);
+            query = query
+                .OrderBy(x=>x.Name)
+                .Skip((model.Pagination.CurrentPage - 1) * model.Pagination.ItemOnPage).Take(model.Pagination.ItemOnPage);
 
             //список елементів,які будуть розбиті по сторінкам.
             model.Cats= query.Select(x => _mapper.Map<CatVM>(x)).ToList();
@@ -93,7 +96,7 @@ namespace WebShop.Controllers
                     await cats.Image.CopyToAsync(stream);
                 }
             }
-
+            
             Cat cat = new Cat
             {
                 Name = cats.Name,
