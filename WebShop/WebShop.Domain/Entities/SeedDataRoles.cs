@@ -34,7 +34,9 @@ namespace WebShop.Domain.Entities
                 var user = new AppUser
                 {
                     Email = "user@gmail.com",
-                    UserName = "user@gmail.com"
+                    UserName = "user@gmail.com",
+                    
+
                 };
                 var result = userManager.CreateAsync(user, "qwerty").Result;
 

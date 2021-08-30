@@ -7,21 +7,38 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Registration">
+        <form asp-action="Registration" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>         
+            </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Image" style="width: 100%;"></label>
+                @if (!string.IsNullOrEmpty(@"Model.Image"))
+                {
+                    <img id="profilePicture" style="width:200px;height:200px; object-fit:cover" src=""))>
+                }
+                @*else
+                {
+                    <img id="profilePicture" style="width:200px;height:200px; object-fit:cover" src="">
+                }*@
+                <input type="file"class="form-control"
+                       accept=".png,.jpg,.jpeg,.gif,.tif"
+                       asp-for="Image"
+                        onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])"/>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Registration" class="btn btn-success" />
             </div>
         </form>
-    </div>
+    </div>            
+                     
 </div>

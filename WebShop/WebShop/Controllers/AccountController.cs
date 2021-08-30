@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebShop.Domain.Entities.Identity;
@@ -26,12 +27,14 @@ namespace WebShop.Controllers
         }
 
         [HttpGet]
+        [Route("login")]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [Route("login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             //якщо введені всі валідні дані.
@@ -61,19 +64,40 @@ namespace WebShop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Cats");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
+        [Route("registration")]
         public IActionResult Registration()
         {
             return View();
         }
 
         [HttpPost]
+        [Route("registration")]
         public async Task<IActionResult> Registration(RegViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
+
+            //строчка для файлу фото профіля.
+            string fileNameUser = string.Empty;
+
+            //якщо фото обрано:
+            if(model.Image!=null)
+            {
+                var ext = Path.GetExtension(model.Image.FileName);
+                fileNameUser = Path.GetRandomFileName() + ext;
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "userImages");
+
+                var filePath = Path.Combine(dir, fileNameUser);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await model.Image.CopyToAsync(stream);
+                }
+            }
+
             //якщо користувач вже існує,то виводимо попередження.
             if (user != null)
             {
@@ -85,18 +109,25 @@ namespace WebShop.Controllers
                  user = new AppUser
                 {
                     Email = model.Email,
-                    UserName=model.Email
+                    UserName=model.Email,
+                    ImageProfile=fileNameUser
                     
                 };
                 var role = new AppRole
                 {
                     Name = "User"
                 };
-                //var rrole =  _roleManager.CreateAsync(role).Result;
+
+                //стіорили користувача.
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
+                    //додали роль користувачу.
                     await _userManager.AddToRoleAsync(user,"User");
+                    //залогінили його.
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    //і перепаравили на головну сторінку.
                     return RedirectToAction("Index", "Home");
                 }
                 else

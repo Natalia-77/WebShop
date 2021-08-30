@@ -31,32 +31,8 @@
                         </li>
                     </ul>
 
-                    @*якщо користувач авторизувався успішно*@
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        //створюю форму для виходу з облакового запису//
-                        using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logout" }))
-                        {
-                            @Html.AntiForgeryToken()
-                
-                                    <p class="text-light">Ви увійшли як:  @User.Identity.Name</p>
-                                    <a href="#" onclick="document.getElementById('logout').submit();" class="nav-link btn btn-link text-light">Вихід</a>
-                                          
+                    @await Html.PartialAsync("_LoginInfo")
 
-                        }
-                    }
-                    @* в іншому ж випадку на вибір пункти меню для входу чи реєстрації. *@
-                    else
-                    {
-                        <ul class="nav navbar-nav ml-auto">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вхід</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Registration">Реєстрація</a>
-                            </li>
-                        </ul>
-                    }
                 </div>
             </div>
         </nav>
