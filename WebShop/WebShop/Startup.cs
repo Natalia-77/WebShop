@@ -96,6 +96,11 @@ namespace WebShop
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapAreaControllerRoute(
+                    name: "admin",
+                    areaName: "admin",
+                    pattern: "admin/{controller=Dashboards}/{action=Dashboard_1}/{id?}");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

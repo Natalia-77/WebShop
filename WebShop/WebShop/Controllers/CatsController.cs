@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -68,6 +69,7 @@ namespace WebShop.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
 
@@ -75,6 +77,8 @@ namespace WebShop.Controllers
         }
 
         [HttpPost]
+        //[Route("add")]
+        //[Authorize(Roles = "Admin")]
         public async Task <IActionResult> Create(CatsValidationModel cats)
         {
 

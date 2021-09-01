@@ -13,35 +13,28 @@ using WebShop.Models;
 
 namespace WebShop.ViewComponents
 {
-    //[Authorize]
+    [Authorize]
     public class NavBarUserViewComponent:ViewComponent
     {
         private readonly UserManager<AppUser> _userManager;
-        private IHostEnvironment _host;
-        public NavBarUserViewComponent(UserManager<AppUser> userManager, IHostEnvironment host)
+       
+        public NavBarUserViewComponent(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
-            _host = host;
+           
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var name = user.ImageProfile;
-            string folder = "\\userImages\\";
-            string contentRootPath = _host.ContentRootPath + folder + name;
 
             UserNavbarInfoViewModel model = new UserNavbarInfoViewModel
-                {
-
-                    Name = user.UserName,
-                    Image = name
-            };
-            
+            {
+                Name = user.UserName,
+                Image = user.ImageProfile
+            };           
+                     
             return View("_UserNavbarInfo", model);
-
-
-
         }
 
     }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,14 +17,17 @@ namespace WebShop.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
+        private IHostEnvironment _host;
 
         public AccountController(UserManager<AppUser> userManager,
                                 SignInManager<AppUser> signInManager,
-                                RoleManager<AppRole> roleManager)
+                                RoleManager<AppRole> roleManager,
+                                IHostEnvironment host)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _host = host;
 
         }
 
@@ -80,23 +85,26 @@ namespace WebShop.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            //строчка для файлу фото профіля.
+            //строчка для файлу фото профіля.            
             string fileNameUser = string.Empty;
 
             //якщо фото обрано:
-            if(model.Image!=null)
+            if (model.Image != null)
             {
+                //розширення
                 var ext = Path.GetExtension(model.Image.FileName);
+                //імя файла з розширенням.
                 fileNameUser = Path.GetRandomFileName() + ext;
-                var dir = Path.Combine(Directory.GetCurrentDirectory(), "userImages");
-
+                //директорія,де знаходитиметься файл.
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
+                //повний шлях до фото.
                 var filePath = Path.Combine(dir, fileNameUser);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
                     await model.Image.CopyToAsync(stream);
                 }
-            }
+            }           
 
             //якщо користувач вже існує,то виводимо попередження.
             if (user != null)
@@ -107,18 +115,17 @@ namespace WebShop.Controllers
             if (ModelState.IsValid)
             {
                  user = new AppUser
-                {
+                 {
                     Email = model.Email,
                     UserName=model.Email,
-                    ImageProfile=fileNameUser
-                    
-                };
+                    ImageProfile = fileNameUser
+                 };
                 var role = new AppRole
                 {
                     Name = "User"
                 };
 
-                //стіорили користувача.
+                //створили користувача.
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)

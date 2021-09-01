@@ -32,7 +32,7 @@ namespace WebShop.Models
         [Required(ErrorMessage = "Невалідний пароль")]
         public string Password { get; set; }
 
-        [Display(Name = "Фото профіля")]
+        //[Display(Name = "Фото профіля")]
         [Required(ErrorMessage = "Обов'язкове поле")]        
         public IFormFile Image { get; set; }
 
