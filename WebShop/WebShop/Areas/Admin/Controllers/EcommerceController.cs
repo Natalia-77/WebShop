@@ -18,7 +18,7 @@ namespace WebShop.Areas.Admin.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly AppEFContext _appEF;
-        public AppRole rolew { get; set; }
+      
         public EcommerceController(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, AppEFContext appEF)
         {
             _userManager = userManager;
@@ -87,12 +87,8 @@ namespace WebShop.Areas.Admin.Controllers
             return await Task.FromResult(View(usersWithRoles));
 
             #endregion
-
-
         }
-
-        [HttpPost]
-       
+        #region Delete
         public async Task<IActionResult> Delete(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
@@ -101,13 +97,16 @@ namespace WebShop.Areas.Admin.Controllers
                 IdentityResult result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                     return RedirectToAction("Orders");
-                //else
-                //    Errors(result);
+                else
+                    ModelState.AddModelError("", "Не вдалося видалити");
             }
-            else
-                ModelState.AddModelError("", "User Not Found");
+            else               
+                ModelState.AddModelError("", "Користувач не знайдений");
+
             return View("Orders", _userManager.Users);
         }
+
+        #endregion
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 @model IEnumerable< WebShop.Areas.Admin.Models.ViewUserRolesModel>
+@*@model IEnumerable<AppUser>*@ 
 
 @using WebShop.Domain.Entities.Identity
 
@@ -67,9 +68,11 @@
                                         <div class="btn-group">
                                             <button class="btn-white btn btn-xs">View</button>
                                             <button class="btn-white btn btn-xs">Edit</button>
-                                            <form asp-action="Delete"asp-route-id="@user.UserId" method="post" >
-                                                <button type="submit" value="Del"class="btn btn-danger" /> |
-                                             </form>
+                                            <a href="Delete/@user.UserId" asp-area="admin" class="text-success"  
+                                              asp-action="Delete" 
+                                               asp-controller="Ecommerce"
+                                               asp-route-id="@user.UserId">Deleted</a> 
+                                            
                                         </div>
                                     </td>
                                 </tr>
