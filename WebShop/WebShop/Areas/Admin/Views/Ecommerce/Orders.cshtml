@@ -1,7 +1,8 @@
 ﻿
-@model IEnumerable<AppUser>
+@model IEnumerable< WebShop.Areas.Admin.Models.ViewUserRolesModel>
 
 @using WebShop.Domain.Entities.Identity
+
 
 @{
     ViewData["Title"] = "Users";
@@ -46,27 +47,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (AppUser user in Model)
+                            @foreach (var user in Model)
                             {
                                 <tr>
                                     <td>
-                                        @user.Id
+                                        @user.UserId
                                     </td>
                                     <td>
-                                        @user.NormalizedUserName
+                                        @user.Username
                                     </td>
                                     <td>
                                         @user.Email
                                     </td>
                                     <td>
-                                        @user.UserRoles
+                                        @user.Role
                                     </td>
 
                                     <td class="text-right">
                                         <div class="btn-group">
                                             <button class="btn-white btn btn-xs">View</button>
                                             <button class="btn-white btn btn-xs">Edit</button>
-                                            <button class="btn-white btn btn-xs">Delete</button>
+                                            <form asp-action="Delete"asp-route-id="@user.UserId" method="post" >
+                                                <button type="submit" value="Del"class="btn btn-danger" /> |
+                                             </form>
                                         </div>
                                     </td>
                                 </tr>

@@ -1,13 +1,26 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebShop.Domain.Entities.Identity;
 
 namespace WebShop.Areas.Admin.Models
 {
-    public class RolesViewModel
+    #region Для першого варіанта відображення списку користувачів з ролями.
+    //public class RolesViewModel
+    //{
+    //    public List<AppUser> Name { get; set; }
+    //    public List<string> Role { get; set; }
+    //   // public List <AppUser> usersa{ get; set; }
+    //}   
+    #endregion
+
+    public class ViewUserRolesModel
     {
-        public IEnumerable<string> RoleNames { get; set; }
-        public string UserName { get; set; }
+        public long UserId { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
     }
 }
