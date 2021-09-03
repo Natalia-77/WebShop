@@ -1,9 +1,6 @@
 ﻿
 @model IEnumerable< WebShop.Areas.Admin.Models.ViewUserRolesModel>
-@*@model IEnumerable<AppUser>*@ 
-
 @using WebShop.Domain.Entities.Identity
-
 
 @{
     ViewData["Title"] = "Users";
@@ -14,14 +11,11 @@
         <h2>Користувачі</h2>
         <ol class="breadcrumb">
             <li>
-                <a href="@Url.Action("Dashboard_1", "Dashboards")">Щось буде...</a>
+                @*<a href="@Url.Action("Dashboard_1", "Dashboards")">Щось буде...</a>*@
             </li>
-            @*<li>
-                    <a>E-commerce</a>
-                </li>
-                <li class="active">
-                    <strong>Orders</strong>
-                </li>*@
+            <li>
+                <a asp-area="admin" class="text-success"  asp-action="Create" asp-controller="Ecommerce">Create</a>
+            </li>               
         </ol>
     </div>
     <div class="col-lg-2">
@@ -29,7 +23,6 @@
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight ecommerce">
-
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox">
@@ -66,13 +59,17 @@
 
                                     <td class="text-right">
                                         <div class="btn-group">
-                                            <button class="btn-white btn btn-xs">View</button>
-                                            <button class="btn-white btn btn-xs">Edit</button>
-                                            <a href="Delete/@user.UserId" asp-area="admin" class="text-success"  
-                                              asp-action="Delete" 
-                                               asp-controller="Ecommerce"
-                                               asp-route-id="@user.UserId">Deleted</a> 
-                                            
+                                            @*<a href="Create" asp-area="admin" class="text-success"
+                                               asp-action="Create"
+                                               asp-controller="Ecommerce">Create</a>*@
+                                            &nbsp;&nbsp;&nbsp;
+                                            <a asp-area="admin" class="text-success"
+                                               asp-action="Edit"
+                                               asp-controller="Ecommerce">Edit</a>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <a href="Delete/@user.UserId" 
+                                               class="text-success">Deleted</a>
+
                                         </div>
                                     </td>
                                 </tr>

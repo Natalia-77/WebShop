@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebShop.Areas.Admin.Models;
@@ -25,6 +26,8 @@ namespace WebShop.Areas.Admin.Controllers
             _roleManager = roleManager;
             _appEF = appEF;
         }
+
+       
         public async Task <IActionResult> Orders()
         {
             #region Перший варіант виводу на сторінці всіх користувачів.
@@ -88,6 +91,7 @@ namespace WebShop.Areas.Admin.Controllers
 
             #endregion
         }
+
         #region Delete
         public async Task<IActionResult> Delete(string id)
         {
@@ -96,7 +100,7 @@ namespace WebShop.Areas.Admin.Controllers
             {
                 IdentityResult result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
-                    return RedirectToAction("Orders");
+                    return RedirectToAction("Orders", "Ecommerce", new { area = "Admin" }, null);
                 else
                     ModelState.AddModelError("", "Не вдалося видалити");
             }
@@ -106,6 +110,78 @@ namespace WebShop.Areas.Admin.Controllers
             return View("Orders", _userManager.Users);
         }
 
+        #endregion
+
+        #region Add new user
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Create(AddUserByAdminModel addUser)
+        {
+            var user = await _userManager.FindByEmailAsync(addUser.Email);
+            
+            //строчка для файлу фото профіля.            
+            string fileNameUser = string.Empty;
+
+            //якщо фото обрано:
+            if (addUser.Image != null)
+            {
+                //розширення
+                var ext = Path.GetExtension(addUser.Image.FileName);
+                //імя файла з розширенням.
+                fileNameUser = Path.GetRandomFileName() + ext;
+                //директорія,де знаходитиметься файл.
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "images");
+                //повний шлях до фото.
+                var filePath = Path.Combine(dir, fileNameUser);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await addUser.Image.CopyToAsync(stream);
+                }
+            }
+           
+            //якщо користувач вже існує,то виводимо попередження.
+            if (user != null)
+            {
+                ModelState.AddModelError("Email", " Користувач з такими даними вже існує ");
+            }
+            //якщо введені валідні дані для реєстрації користувача:
+            if (ModelState.IsValid)
+            {
+                user = new AppUser
+                {
+                    Email = addUser.Email,
+                    UserName = addUser.Email,
+                    ImageProfile = fileNameUser
+                };
+                var role = new AppRole
+                {
+                    Name = "User"
+                };
+
+                //створили користувача.
+                var result = await _userManager.CreateAsync(user, addUser.Password);
+
+                if (result.Succeeded)
+                {
+                    //додали роль користувачу.
+                    await _userManager.AddToRoleAsync(user, "User");
+                    //і перепаравили на головну сторінку з переліком користувачів.
+                    return RedirectToAction("Orders", "Ecommerce", new { area = "Admin" }, null);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Помилка.");
+                }
+            }
+            return View(addUser);
+        }
         #endregion
 
     }

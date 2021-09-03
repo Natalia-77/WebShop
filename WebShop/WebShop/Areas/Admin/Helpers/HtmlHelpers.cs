@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace WebShop.Areas.Admin.Helpers
 {
@@ -32,6 +35,8 @@ namespace WebShop.Areas.Admin.Helpers
             string currentAction = (string)htmlHelper.ViewContext.RouteData.Values["action"];
             return currentAction;
         }
+
+        
 
     }
 }
