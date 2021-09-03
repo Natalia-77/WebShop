@@ -1,7 +1,9 @@
 ﻿//using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,12 +21,17 @@ namespace WebShop.Areas.Admin.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly AppEFContext _appEF;
-      
-        public EcommerceController(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, AppEFContext appEF)
+        private IPasswordHasher<AppUser> _passwordHasher;
+
+        public EcommerceController(UserManager<AppUser> userManager,
+            RoleManager<AppRole> roleManager,
+            AppEFContext appEF,
+            IPasswordHasher<AppUser> passwordHasher)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _appEF = appEF;
+            _passwordHasher = passwordHasher;
         }
 
        
@@ -93,6 +100,7 @@ namespace WebShop.Areas.Admin.Controllers
         }
 
         #region Delete
+       
         public async Task<IActionResult> Delete(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
@@ -184,5 +192,86 @@ namespace WebShop.Areas.Admin.Controllers
         }
         #endregion
 
+        #region Edit
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            AppUser user = await _userManager.FindByIdAsync(id);
+            EditUserModel editUser = new();
+
+            var usersWithRoles = (from usera in _appEF.Users
+                                  select new
+                                  {
+                                      UserId = usera.Id,
+                                      Username = usera.UserName,
+                                      Email = usera.Email,
+                                      RoleNames = (from userRole in usera.UserRoles
+                                                   join role in _appEF.Roles on userRole.RoleId
+                                                   equals role.Id
+                                                   select role.Name).ToList()
+                                  }).ToList().Select(p => new ViewUserRolesModel()
+
+                                  {
+                                      UserId = p.UserId,
+                                      Username = p.Username,
+                                      Email = p.Email,
+                                      Role = string.Join(",", p.RoleNames)
+                                  });
+            foreach (var item in usersWithRoles)
+            {
+                editUser.RoleUser = item.Role;
+            }
+
+            if (user != null)
+            {
+                editUser.NameUser = user.NormalizedUserName;
+                editUser.Email = user.Email;
+                editUser.Image = user.ImageProfile;                              
+
+                return View(editUser);
+            }
+               
+            else
+                return RedirectToAction("Orders","Ecommerce", new { area = "admin" });
+        }
+
+
+        [HttpPost]        
+        public async Task<IActionResult> Edit(string id, string email,string photo)
+        {
+            AppUser user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                if (!string.IsNullOrEmpty(email))
+                    user.Email = email;
+                else
+                    ModelState.AddModelError("", "Email cannot be empty");
+
+
+                if (user.ImageProfile!=null)
+                    user.ImageProfile = photo;
+                else
+                    ModelState.AddModelError("", "Photo cannot be empty");
+
+                if (!string.IsNullOrEmpty(email)&& user.ImageProfile != null)
+                {
+                    IdentityResult result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                        return RedirectToAction("Orders","Ecommerce",new { area="admin"});
+                    else
+                        ModelState.AddModelError("", "Error");
+                }
+            }
+            else
+                ModelState.AddModelError("", "User Not Found");
+            return View(user);
+
+        }
+
+
+
+
+
+        #endregion
     }
 }
