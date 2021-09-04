@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="NameUser" class="control-label"></label>
@@ -21,19 +21,18 @@
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>           
+            </div>
             <div class="form-group">
-                <label asp-for="Image" class="control-label" asp-area="admin"></label>
-                <img src="/images/@Model.Image" style="width:40px;height:40px; object-fit:cover; border-radius:30px "/>
+                <label asp-for="Image" class="control-label" asp-area="admin"></label>                
                 <div>
-                    <img id="profilePicture" style="width:150px;height:150px; object-fit:cover">
+                    <img id="profilePicture"src="/images/@Model.Image"  style="width: 150px; height: 150px;">
                 </div>
                 <input asp-for="Image" type="file"
-                       class="form-control"
+                       class="form-control" src="/images/@Model.Image"  object-fit: cover"
                        onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])">
                 <span asp-validation-for="Image" class="text-danger"></span>
-            </div>              
-            
+            </div>
+
             <div class="form-group">
                 <label asp-for="RoleUser" class="control-label"></label>
                 <input asp-for="RoleUser" class="form-control" />

@@ -99,8 +99,11 @@ namespace WebShop.Areas.Admin.Controllers
             #endregion
         }
 
+
+
+
         #region Delete
-       
+
         public async Task<IActionResult> Delete(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
@@ -197,7 +200,7 @@ namespace WebShop.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
-            EditUserModel editUser = new();
+            EditUserModel editUser = new EditUserModel();
 
             var usersWithRoles = (from usera in _appEF.Users
                                   select new
@@ -219,6 +222,7 @@ namespace WebShop.Areas.Admin.Controllers
                                   });
             foreach (var item in usersWithRoles)
             {
+                
                 editUser.RoleUser = item.Role;
             }
 
@@ -226,7 +230,7 @@ namespace WebShop.Areas.Admin.Controllers
             {
                 editUser.NameUser = user.NormalizedUserName;
                 editUser.Email = user.Email;
-                editUser.Image = user.ImageProfile;                              
+                editUser.Image = user.ImageProfile;
 
                 return View(editUser);
             }
@@ -237,23 +241,28 @@ namespace WebShop.Areas.Admin.Controllers
 
 
         [HttpPost]        
-        public async Task<IActionResult> Edit(string id, string email,string photo)
+        public async Task<IActionResult> Edit(string id, EditUserModel edit)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
+            
             if (user != null)
             {
-                if (!string.IsNullOrEmpty(email))
-                    user.Email = email;
+                if (!string.IsNullOrEmpty(edit.Email))
+                    user.Email = edit.Email;
                 else
                     ModelState.AddModelError("", "Email cannot be empty");
 
+                if (!string.IsNullOrEmpty(edit.NameUser))
+                    user.UserName = edit.NameUser;
+                else
+                    ModelState.AddModelError("", "Email cannot be empty");
 
-                if (user.ImageProfile!=null)
-                    user.ImageProfile = photo;
+                if (user.ImageProfile != null)
+                    user.ImageProfile = edit.Image;
                 else
                     ModelState.AddModelError("", "Photo cannot be empty");
 
-                if (!string.IsNullOrEmpty(email)&& user.ImageProfile != null)
+                if (!string.IsNullOrEmpty(edit.Email)&& !string.IsNullOrEmpty(edit.NameUser))
                 {
                     IdentityResult result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
@@ -264,14 +273,10 @@ namespace WebShop.Areas.Admin.Controllers
             }
             else
                 ModelState.AddModelError("", "User Not Found");
+
             return View(user);
 
         }
-
-
-
-
-
         #endregion
     }
 }
