@@ -69,15 +69,14 @@ namespace WebShop.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
 
             return View();
         }
 
-        [HttpPost]
-        //[Route("add")]
+        [HttpPost]       
         //[Authorize(Roles = "Admin")]
         public async Task <IActionResult> Create(CatsValidationModel cats)
         {

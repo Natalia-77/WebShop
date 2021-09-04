@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.WebPages.Html;
 using WebShop.Areas.Admin.Models;
 using WebShop.Domain;
 using WebShop.Domain.Entities.Identity;
@@ -32,9 +33,9 @@ namespace WebShop.Areas.Admin.Controllers
             _roleManager = roleManager;
             _appEF = appEF;
             _passwordHasher = passwordHasher;
-        }
+        }              
 
-       
+
         public async Task <IActionResult> Orders()
         {
             #region Перший варіант виводу на сторінці всіх користувачів.
@@ -200,82 +201,60 @@ namespace WebShop.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
-            EditUserModel editUser = new EditUserModel();
-
-            var usersWithRoles = (from usera in _appEF.Users
-                                  select new
-                                  {
-                                      UserId = usera.Id,
-                                      Username = usera.UserName,
-                                      Email = usera.Email,
-                                      RoleNames = (from userRole in usera.UserRoles
-                                                   join role in _appEF.Roles on userRole.RoleId
-                                                   equals role.Id
-                                                   select role.Name).ToList()
-                                  }).ToList().Select(p => new ViewUserRolesModel()
-
-                                  {
-                                      UserId = p.UserId,
-                                      Username = p.Username,
-                                      Email = p.Email,
-                                      Role = string.Join(",", p.RoleNames)
-                                  });
-            foreach (var item in usersWithRoles)
-            {
-                
-                editUser.RoleUser = item.Role;
-            }
-
-            if (user != null)
-            {
-                editUser.NameUser = user.NormalizedUserName;
-                editUser.Email = user.Email;
-                editUser.Image = user.ImageProfile;
-
-                return View(editUser);
-            }
-               
-            else
-                return RedirectToAction("Orders","Ecommerce", new { area = "admin" });
+            string userRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+            UserWithRoles editUser = new UserWithRoles()
+            { 
+             UserId=user.Id,
+             UserName=user.UserName,
+              Email=user.Email,
+              Image=user.ImageProfile,
+              Role=userRole
+            };       
+                     
+            List<string> roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            ViewBag.Roles = roles;
+            
+            return View(editUser);               
+            
         }
 
 
         [HttpPost]        
-        public async Task<IActionResult> Edit(string id, EditUserModel edit)
+        public async Task<IActionResult> Edit(string id,ChangeRoleModel changeRole)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
-            
-            if (user != null)
+
+            if (!string.IsNullOrEmpty(changeRole.OldRole))
             {
-                if (!string.IsNullOrEmpty(edit.Email))
-                    user.Email = edit.Email;
-                else
-                    ModelState.AddModelError("", "Email cannot be empty");
-
-                if (!string.IsNullOrEmpty(edit.NameUser))
-                    user.UserName = edit.NameUser;
-                else
-                    ModelState.AddModelError("", "Email cannot be empty");
-
-                if (user.ImageProfile != null)
-                    user.ImageProfile = edit.Image;
-                else
-                    ModelState.AddModelError("", "Photo cannot be empty");
-
-                if (!string.IsNullOrEmpty(edit.Email)&& !string.IsNullOrEmpty(edit.NameUser))
-                {
-                    IdentityResult result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                        return RedirectToAction("Orders","Ecommerce",new { area="admin"});
-                    else
-                        ModelState.AddModelError("", "Error");
-                }
+                IdentityResult delRole = await _userManager.RemoveFromRoleAsync(user,changeRole.OldRole);
             }
+            IdentityResult addRole = await _userManager.AddToRoleAsync(user, changeRole.Role);
+
+
+            if (!string.IsNullOrEmpty(changeRole.Email))
+                user.Email = changeRole.Email;
             else
-                ModelState.AddModelError("", "User Not Found");
+                ModelState.AddModelError("", "Email cannot be empty");
 
-            return View(user);
+            if (!string.IsNullOrEmpty(changeRole.UserName))
+                user.UserName = changeRole.UserName;
+            else
+                ModelState.AddModelError("", "Name cannot be empty");
+            if (user.ImageProfile != null)
+                user.ImageProfile = changeRole.Image;
+            else
+                ModelState.AddModelError("", "Photo cannot be empty");
 
+            if (!string.IsNullOrEmpty(changeRole.Email) && !string.IsNullOrEmpty(changeRole.UserName))
+            {
+                IdentityResult result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return RedirectToAction("Orders", "Ecommerce", new { area = "admin" });
+                else
+                    ModelState.AddModelError("", "Error");
+            }
+            return RedirectToAction("Orders", "Ecommerce", new { area = "admin" });
+            
         }
         #endregion
     }
