@@ -1,32 +1,46 @@
 ﻿
-<ul class="navbar-nav ml-auto">
+<ul class="navbar-nav ml-4 ">
 
     @*якщо користувач авторизувався успішно*@
     @if (User.Identity.IsAuthenticated)
     {
-        @await Component.InvokeAsync("NavBarUser")
-        <li class="nav-item">
-            @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logout" }))
-            {
-                <a class="nav-link" href="#"
-                   onclick="document.getElementById('logout').submit();">
-                    Вихід <i class="fa fa-sign-out" aria-hidden="true"></i>
-                </a>
-            }
+        @if (User.IsInRole("Admin"))
+         {
+            <li class="nav-item ml-5">
+                <a class="nav-link text-light fw-bold text-decoration-underline text-center  " 
+                   style="font-size:90%"
+                   asp-area="admin" 
+                   asp-controller="Ecommerce" 
+                   asp-action="Orders">Admin panel</a>
+            </li>
 
-        </li>
-    }
-    @* в іншому ж випадку на вибір пункти меню для входу чи реєстрації. *@
-    else
-    {
+         }
+            @await Component.InvokeAsync("NavBarUser")
+       
+            <li class="nav-item">
 
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вхід</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Registration">Реєстрація</a>
-        </li>
+                @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logout" }))
+                {
+                    
+                    <a class="nav-link" href="#"
+                       onclick="document.getElementById('logout').submit();">
+                        Вихід <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    </a>
+                }
 
-    }
+            </li>
+}
+@* в іншому ж випадку на вибір пункти меню для входу чи реєстрації. *@
+else
+{
+
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вхід</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Registration">Реєстрація</a>
+    </li>
+
+}
 
 </ul>
